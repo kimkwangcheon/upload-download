@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: poiapi
+
+  ## JSP 세팅
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+  ## H2 DB 세팅
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  ## 데이터베이스 세팅
+  datasource:
+    # HikariCP
+    hikari:
+        maximum-pool-size: 4
+    # H2 - embedded Mode
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:./db
+    username: sa
+    password:
+    # H2 - In-Memory mode
+#    driverClassName: org.h2.Driver
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
+
+  sql:
+    init:
+      mode: always
+
+  ## [DEV] devtools 세팅 (파일 수정 시 서버 재시작 없이 바로 적용)
+  devtools:
+    restart:
+      additional-paths: src/main/resources
+      exclude: static/**,public/**
+
+  ## 엑셀 파일 업로드 세팅
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+## 로그 세팅
+logging:
+  level:
+    org:
+      apache:
+        ibatis: OFF
+    com:
+      example:
+        mapper: OFF
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+
+# JSP 수정 시 서버 재시작 없이 바로 적용될 수 있게 설정
+# server:
+#   servlet:
+#     jsp:
+#       init-parameters:
+#         development: true

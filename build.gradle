@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.0'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// DB 관련
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc' //JDBC Driver 추가
+	implementation 'com.h2database:h2'   // runtimeOnly가 아닌 implementation으로 의존성 수정
+
+	// 소스 수정시 자동 빌드 (developmentOnly: 개발환경에서만 사용)
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// jsp 관련
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'   // 톰캣: JSP 엔진
+
+	// MyBatis 추가
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+	// 엑셀 업로드 관련
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

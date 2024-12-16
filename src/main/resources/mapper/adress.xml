@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.poiapi.repository.AddressMapper">
+    <insert id="insertAddress">
+        INSERT INTO Address (
+            postal_code,
+            city,
+            city_english,
+            district,
+            district_english,
+            town,
+            town_english,
+            road_code,
+            road_name,
+            road_name_english,
+            underground,
+            building_main_number,
+            building_sub_number,
+            building_management_number,
+            bulk_delivery_name,
+            district_building_name,
+            legal_dong_code,
+            legal_dong_name,
+            ri_name,
+            administrative_dong_name,
+            mountain,
+            lot_main_number,
+            town_serial_number,
+            lot_sub_number,
+            old_postal_code,
+            postal_code_serial_number
+        )
+        VALUES
+        <foreach collection="data" item="item" separator=",">
+        (
+            #{item.postal_code},
+            #{item.city},
+            #{item.city_english},
+            #{item.district},
+            #{item.district_english},
+            #{item.town},
+            #{item.town_english},
+            #{item.road_code},
+            #{item.road_name},
+            #{item.road_name_english},
+            #{item.underground},
+            #{item.building_main_number},
+            #{item.building_sub_number},
+            #{item.building_management_number},
+            #{item.bulk_delivery_name},
+            #{item.district_building_name},
+            #{item.legal_dong_code},
+            #{item.legal_dong_name},
+            #{item.ri_name},
+            #{item.administrative_dong_name},
+            #{item.mountain},
+            #{item.lot_main_number},
+            #{item.town_serial_number},
+            #{item.lot_sub_number},
+            #{item.old_postal_code},
+            #{item.postal_code_serial_number}
+        )
+        </foreach>
+    </insert>
+</mapper>
