@@ -49,12 +49,10 @@ spring:
 ## 로그 세팅
 logging:
   level:
-    org:
-      apache:
-        ibatis: OFF
+    root: error
+    org.springframework: info
     com:
-      example:
-        mapper: OFF
+      example: off
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
