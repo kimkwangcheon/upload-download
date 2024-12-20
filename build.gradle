@@ -31,8 +31,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// DB 관련
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc' //JDBC Driver 추가
-	implementation 'com.h2database:h2'   // runtimeOnly가 아닌 implementation으로 의존성 수정
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'  // [h2] JDBC Driver 추가
+	implementation 'com.h2database:h2'  // [h2] runtimeOnly가 아닌 implementation으로 의존성 수정
+	implementation 'com.mysql:mysql-connector-j'  // mysql 커넥터 추가
 
 	// 소스 수정시 자동 빌드 (developmentOnly: 개발환경에서만 사용)
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

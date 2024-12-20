@@ -1,6 +1,6 @@
 package com.example.poiapi.service;
 
-import com.example.poiapi.repository.AddressMapper;
+import com.example.poiapi.repository.PoiMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -19,16 +19,16 @@ import java.util.Map;
 
 @Log4j2
 @Service
-public class AddressService {
+public class PoiService {
 
-    private final AddressMapper addressMapper;
+    private final PoiMapper poiMapper;
 
-    public AddressService(AddressMapper addressMapper){
-        this.addressMapper = addressMapper;
+    public PoiService(PoiMapper poiMapper){
+        this.poiMapper = poiMapper;
     }
 
     public void insertAddress(List<Map<String, Object>> data) {
-        addressMapper.insertAddress(data);
+        poiMapper.insertAddress(data);
     }
 
     public Map<String, Object> processExcelFile(MultipartFile file) throws IOException, InvalidFormatException {

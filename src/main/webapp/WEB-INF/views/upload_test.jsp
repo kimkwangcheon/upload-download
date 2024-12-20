@@ -39,6 +39,7 @@
 
     $(document).ready(function() {
         ajaxUpload('#upFile', '#uploadForm', '/upload');
+        ajaxUpload('#upFile2', '#uploadForm2', '/upload');
     });
     </script>
 </head>
@@ -57,6 +58,12 @@
         <p><b>[XSSF] upload</b>: H2 DB - 일반 foreach문</p>
         <form id="uploadForm" method="post" action="/upload" enctype="multipart/form-data">
             <p><input type="file" name="upFile" id="upFile" accept=".xlsx" /></p>
+        </form>
+    </div>
+    <div style="border: 1px solid #000; padding: 10px; width: 380px;">
+        <p><b>[XSSF] upload</b>: MYSQL DB - 일반 foreach문</p>
+        <form id="uploadForm2" method="post" action="/upload" enctype="multipart/form-data">
+            <p><input type="file" name="upFile2" id="upFile2" accept=".xlsx" /></p>
         </form>
     </div>
 </body>

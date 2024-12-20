@@ -1,6 +1,6 @@
 package com.example.poiapi.controller;
 
-import com.example.poiapi.service.AddressService;
+import com.example.poiapi.service.PoiService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.http.HttpStatus;
@@ -17,10 +17,10 @@ import java.util.*;
 @RestController
 public class PoiController {
 
-    private final AddressService addressService;
+    private final PoiService poiService;
 
-    public PoiController(AddressService addressService) {
-        this.addressService = addressService;
+    public PoiController(PoiService poiService) {
+        this.poiService = poiService;
     }
 
     @PostMapping("/upload")
@@ -41,7 +41,7 @@ public class PoiController {
                 file = request.getFile(myIterator.next());
             }
 
-            response = addressService.processExcelFile(Objects.requireNonNull(file));
+            response = poiService.processExcelFile(Objects.requireNonNull(file));
 
             // [poi 엑셀 업로드] 총 종료 시간 측정
             long allEndTime = System.currentTimeMillis();

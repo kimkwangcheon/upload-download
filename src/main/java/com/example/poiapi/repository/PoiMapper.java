@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface AddressMapper {
+public interface PoiMapper {
     void insertAddress(@Param("data") List<Map<String, Object>> data);
 }

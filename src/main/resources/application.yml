@@ -18,18 +18,23 @@ spring:
   datasource:
     # HikariCP
     hikari:
-      maximum-pool-size: 50
+      maximum-pool-size: 4
       connection-timeout: 30000
     # H2 - embedded Mode
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:./db
-    username: sa
-    password:
+#    driverClassName: org.h2.Driver
+#    url: jdbc:h2:./db
+#    username: sa
+#    password:
     # H2 - In-Memory mode
 #    driverClassName: org.h2.Driver
 #    url: jdbc:h2:mem:test
 #    username: sa
 #    password:
+    # MYSQL - Local
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 1234
 
   sql:
     init:
