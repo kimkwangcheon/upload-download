@@ -1,9 +1,10 @@
 spring:
   application:
-    name: poiapi
+    name: upload-download
 
   ## JSP 세팅
   mvc:
+    static-path-pattern: /**
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
@@ -56,7 +57,7 @@ spring:
 logging:
   level:
     root: debug
-    com.example.poiapi: debug
+    com.example: debug
 
 ## MyBatis 세팅
 mybatis:

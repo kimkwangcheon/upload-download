@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.poiapi.repository.TestMapper">
+<mapper namespace="com.example.repository.TestMapper">
 
     <select id="selectTest" resultType="java.lang.String">
         SELECT 'test' AS column1, 2 AS column2 FROM DUAL

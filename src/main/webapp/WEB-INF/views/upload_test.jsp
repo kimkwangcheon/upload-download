@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Upload Test Page</title>
+    <title>Upload Test</title>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
     function ajaxUpload(inputId, formId, beUrl) {
