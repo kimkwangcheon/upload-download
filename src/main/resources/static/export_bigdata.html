@@ -23,17 +23,17 @@
 
 <!-- AUIGrid 테마 CSS 파일입니다. 그리드 출력을 위해 꼭 삽입하십시오. -->
 <!-- 원하는 테마가 있다면, 다른 파일로 교체 하십시오. -->
-<link href="../AUIGrid/AUIGrid_style.css" rel="stylesheet">
+<link href="./AUIGrid/AUIGrid_style.css" rel="stylesheet">
 
 <!-- AUIGrid 라이센스 파일입니다. 그리드 출력을 위해 꼭 삽입하십시오. -->
-<script type="text/javascript" src="../AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="./AUIGrid/AUIGridLicense.js"></script>
 
 <!-- AUIGrid 컴포넌트 JS 파일입니다. 그리드 출력을 위해 꼭 삽입하십시오.--> 
-<script type="text/javascript" src="../AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="./AUIGrid/AUIGrid.js"></script>
 
 
 <!-- 브라우저 다운로딩 할 수 있는 JS 추가 -->
-<script type="text/javascript" src="../export_server_samples/FileSaver.min.js"></script>
+<script type="text/javascript" src="./export_server_samples/FileSaver.min.js"></script>
 
 <style type="text/css">
 	/* 커스텀 summary total  스타일 */
@@ -61,6 +61,7 @@
 
 	// AUIGrid 생성 후 반환 ID
 	var myGridID;
+	var myGridID2;
 
 	// document ready 
 	function documentReady() {
@@ -164,6 +165,87 @@
 		}
 	};
 
+	// 엑셀 양식 내보내기(Export);
+	function exportToForm() {
+		// AUIGrid 칼럼 설정 (엑셀 양식 다운로드)
+		// 칼럼 레이아웃
+		var columnLayout = [{
+			dataField: "isbn",
+			headerText: "ISBN",
+			width: 200
+		}, {
+			dataField: "title",
+			headerText: "책 제목",
+			width: 300,
+			style: "my-left"
+		}, {
+			dataField: "author",
+			headerText: "저자",
+			width: 120
+		}, {
+			dataField: "publisher",
+			headerText: "출판사",
+			width: 120
+		}, {
+			dataField: "price",
+			headerText: "가격",
+			style: "my-right",
+			dataType: "numeric",
+			formatString: "#,##0",
+			width: 100
+		}, {
+			dataField: "pubdate",
+			headerText: "출판일",
+			dataType: "date",
+			formatString: "yyyy. mm. dd",
+			width: 100
+		}, {
+			dataField: "memo",
+			headerText: "메모",
+			style: "my-left",
+			width: 200
+		}];
+
+		var gridProps = {
+			editable: false,
+			//rowNumColumnWidth: 50,
+			fillColumnSizeMode: true
+		};
+
+		// 실제로 #grid_wrap 에 그리드 생성
+		myGridID2 = AUIGrid.create("#grid_wrap_excel_form", columnLayout, gridProps);
+
+		// 데이터 1줄 생성 및 삽입 (헤더 영문명)
+		var headerEngGridData = [];
+		var item;
+		for (i = 0; i < 1; i++) {
+			item = {};
+			for (n in columnLayout) {
+				item[columnLayout[n].dataField] = columnLayout[n].dataField;
+			}
+			headerEngGridData[i] = item;
+		}
+		// AUIGrid 에 데이터 삽입합니다.
+		AUIGrid.setGridData("#grid_wrap_excel_form", headerEngGridData);
+
+		//FileSaver.js 로 로컬 다운로드가능 여부 확인
+		if (!AUIGrid.isAvailableLocalDownload(myGridID2)) {
+			alert("로컬 다운로드 불가능한 브라우저 입니다. 서버 사이드로 전송하여 다운로드 처리하십시오.");
+			return;
+		}
+
+		// 엑셀 양식 다운로드
+		AUIGrid.exportToXlsx(myGridID2, {
+			fileName: "AUIGrid_엑셀 양식 다운로드 테스트",
+			rowHeight : 0,									// 헤더 영문명 숨김
+			afterRequestCallback: function() {				// 엑셀로 내보내기 후 호출될 콜백함수
+				// AUIGrid 삭제
+				AUIGrid.destroy("#grid_wrap_excel_form");
+			}
+		});
+	};
+
+
 
 	// count 수만큼  데이터 생성
 	function createGridData(count) {
@@ -203,12 +285,14 @@
 		<p>참고 : CSV라고 무조건 다운로드 가능하게 아닙니다. 엑셀보다 용량(크기) 면에서 훨씬 가볍기 때문에 CSV 전환으로 대체하라는 의미입니다. 브라우저 메모리 가용 크기나 CSV Blob 크기가 최대값을 초과한다면 CSV도 다운로드 불가능합니다.</p>
 		<ul class="nav_u">
 			<li><span onclick="exportTo()" class="btn">엑셀 or CSV 로 내보내기</span></li>
+			<li><span onclick="exportToForm()" class="btn">엑셀 양식으로 내보내기</span></li>
 		</ul>
 	</div>
 
 	<div>
 		<!-- 에이유아이 그리드가 이곳에 생성됩니다. -->
 		<div id="grid_wrap" style="width:100%;height:420px; margin:0 auto;"></div>
+		<div id="grid_wrap_excel_form" style="width:100%;height:420px; margin:0 auto;"></div>
 	</div>
 	<div class="desc_bottom">
 		<p id="ellapse"></p>

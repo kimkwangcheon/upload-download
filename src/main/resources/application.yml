@@ -57,7 +57,7 @@ spring:
 logging:
   level:
     root: debug
-    com.example: debug
+#    com.example: debug
 
 ## MyBatis 세팅
 mybatis:
