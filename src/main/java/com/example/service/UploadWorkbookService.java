@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.model.ResTargetTableSchemaInfo;
 import com.example.repository.UploadMapper;
 import com.example.util.StringUtil;
 import lombok.extern.log4j.Log4j2;
@@ -33,10 +34,6 @@ public class UploadWorkbookService {
         this.uploadMapper = uploadMapper;
     }
 
-    public void insertBooks(ArrayList<HashMap<String, Object>> data) {
-        uploadMapper.insertBooks(data);
-    }
-
     public Map<String, Object> uploadWorkbook(MultipartFile file) throws IOException, InvalidFormatException {
         Map<String, Object> response = new HashMap<>();
 
@@ -63,8 +60,8 @@ public class UploadWorkbookService {
             // stopwatch로 종료 시간 측정
             // ---------------- 시작 ----------------
             stopWatch.stop();
-            log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] new HSSFWorkbook 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-            response.put("[service] new HSSFWorkbook 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+            log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 1 new HSSFWorkbook 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+            response.put("[service] 1 new HSSFWorkbook 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
             stopWatch.start();
             // ---------------- 끝 ----------------
 
@@ -78,8 +75,8 @@ public class UploadWorkbookService {
             // stopwatch로 종료 시간 측정
             // ---------------- 시작 ----------------
             stopWatch.stop();
-            log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] xlsWorkbook.getSheetAt 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-            response.put("[service] xlsWorkbook.getSheetAt 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+            log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 2 xlsWorkbook.getSheetAt 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+            response.put("[service] 2 xlsWorkbook.getSheetAt 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
             stopWatch.start();
             // ---------------- 끝 ----------------
 
@@ -88,8 +85,8 @@ public class UploadWorkbookService {
             // stopwatch로 종료 시간 측정
             // ---------------- 시작 ----------------
             stopWatch.stop();
-            log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] xlsParsing 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-            response.put("[service] xlsParsing 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+            log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 3 xlsParsing 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+            response.put("[service] 3 xlsParsing 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
             stopWatch.start();
             // ---------------- 끝 ----------------
         }
@@ -103,8 +100,8 @@ public class UploadWorkbookService {
                 // stopwatch로 종료 시간 측정
                 // ---------------- 시작 ----------------
                 stopWatch.stop();
-                log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] new XSSFWorkbook 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-                response.put("[service] new XSSFWorkbook 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+                log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 1 new XSSFWorkbook 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+                response.put("[service] 1 new XSSFWorkbook 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
                 stopWatch.start();
                 // ---------------- 끝 ----------------
 
@@ -118,8 +115,8 @@ public class UploadWorkbookService {
                 // stopwatch로 종료 시간 측정
                 // ---------------- 시작 ----------------
                 stopWatch.stop();
-                log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] xlsWorkbook.getSheetAt 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-                response.put("[service] xlsWorkbook.getSheetAt 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+                log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 2 xlsWorkbook.getSheetAt 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+                response.put("[service] 2 xlsWorkbook.getSheetAt 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
                 stopWatch.start();
                 // ---------------- 끝 ----------------
 
@@ -128,8 +125,8 @@ public class UploadWorkbookService {
                 // stopwatch로 종료 시간 측정
                 // ---------------- 시작 ----------------
                 stopWatch.stop();
-                log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] xlsParsing 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-                response.put("[service] xlsParsing 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+                log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 3 xlsParsing 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+                response.put("[service] 3 xlsParsing 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
                 stopWatch.start();
                 // ---------------- 끝 ----------------
 //            }
@@ -139,31 +136,84 @@ public class UploadWorkbookService {
         //// validation
         // validation: 컬럼명, 컬럼타입, 컬럼길이, null허용여부, PK중복여부
         // ㄴ 컬럼명: 첫행 건너뛰고, 두번째 행(영문명)을 DB컬럼명과 비교 체크 (validation: 컬럼명)
-        List<Map<String, Object>> schemaInfo = uploadMapper.getTargetTableSchemaInfo("test", "books");
+        List<ResTargetTableSchemaInfo> schemaInfo = uploadMapper.getTargetTableSchemaInfo("test", "books");
+        response.put("schemaInfo", schemaInfo);
         // isValid가 false인 경우 if문으로 빠져나가도록 구현
         response.putAll(validateColumnNames(schemaInfo, sheetData));    // 컬럼명
         if (!(Boolean) response.get("isValid")) {
             return response;
         }
+        // stopwatch로 종료 시간 측정
+        // ---------------- 시작 ----------------
+        stopWatch.stop();
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 4-1 validateColumnNames 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 4-1 validateColumnNames 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+        // ---------------- 끝 ----------------
         response.putAll(validateDataTypes(schemaInfo, sheetData));      // 컬럼타입
         if (!(Boolean) response.get("isValid")) {
             return response;
         }
+        // stopwatch로 종료 시간 측정
+        // ---------------- 시작 ----------------
+        stopWatch.stop();
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 4-2 validateDataTypes 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 4-2 validateDataTypes 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+        // ---------------- 끝 ----------------
         response.putAll(validateColumnLengths(schemaInfo, sheetData));  // 컬럼길이
         if (!(Boolean) response.get("isValid")) {
             return response;
         }
+        // stopwatch로 종료 시간 측정
+        // ---------------- 시작 ----------------
+        stopWatch.stop();
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 4-3 validateColumnLengths 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 4-3 validateColumnLengths 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+        // ---------------- 끝 ----------------
         response.putAll(validateNullability(schemaInfo, sheetData));    // null허용여부
         if (!(Boolean) response.get("isValid")) {
             return response;
         }
+        // stopwatch로 종료 시간 측정
+        // ---------------- 시작 ----------------
+        stopWatch.stop();
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 4-4 validateNullability 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 4-4 validateNullability 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+        // ---------------- 끝 ----------------
         response.putAll(validatePrimaryKeyUniqueness(schemaInfo, sheetData));   // PK중복여부
         if (!(Boolean) response.get("isValid")) {
             return response;
         }
+        // stopwatch로 종료 시간 측정
+        // ---------------- 시작 ----------------
+        stopWatch.stop();
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 4-5 validatePrimaryKeyUniqueness 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 4-5 validatePrimaryKeyUniqueness 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+        // ---------------- 끝 ----------------
 
         // DB 저장
-        insertBooks((ArrayList<HashMap<String, Object>>) sheetData.get("rowData"));
+        int batchSize = 1000;
+        List<Map<String, Object>> excelUploadData = (List<Map<String, Object>>) sheetData.get("rowData");
+        for (int i = 0; i < excelUploadData.size(); i += batchSize) {
+            log.debug("i: {}", i);
+            if (i % batchSize == 0) {
+                int end = Math.min(i + batchSize, excelUploadData.size());
+                List<Map<String, Object>> batchList = excelUploadData.subList(i, end);
+                uploadMapper.insertBooks(batchList);
+            }
+        }
+//        uploadMapper.insertBooks((ArrayList<HashMap<String, Object>>) sheetData.get("rowData"));
+        // stopwatch로 종료 시간 측정
+        // ---------------- 시작 ----------------
+        stopWatch.stop();
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 5 DB 저장 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 5 DB 저장 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+        // ---------------- 끝 ----------------
 
         // 자원 반납
         if(fileKind.equals("xls") && xlsWorkbook != null) {
@@ -175,8 +225,8 @@ public class UploadWorkbookService {
         // stopwatch로 종료 시간 측정
         // ---------------- 시작 ----------------
         stopWatch.stop();
-        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 엑셀 업로드 총 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
-        response.put("[service] 엑셀 업로드 총 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
+        log.debug(">>>>>>>>>> [poi-uploadWorkbook][service] 6 엑셀 업로드 총 실행 시간: {} milliseconds", stopWatch.getTotalTimeMillis());
+        response.put("[service] 6 엑셀 업로드 총 실행 시간 (ms)", stopWatch.getTotalTimeMillis());
         // ---------------- 끝 ----------------
 
         return response;
@@ -187,11 +237,11 @@ public class UploadWorkbookService {
      * @description : validation - 컬럼명 체크
      *
      */
-    public static Map<String, Object> validateColumnNames(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+    public static Map<String, Object> validateColumnNames(List<ResTargetTableSchemaInfo> schemaInfo, Map<String, Object> sheetData) {
         Map<String, Object> result = new HashMap<>();
         List<String> dbColumnNames = new ArrayList<>();
-        for (Map<String, Object> columnInfo : schemaInfo) {
-            dbColumnNames.add((String) columnInfo.get("COLUMN_NAME"));
+        for (ResTargetTableSchemaInfo columnInfo : schemaInfo) {
+            dbColumnNames.add(columnInfo.getCOLUMN_NAME());
         }
 
         ArrayList<String> rowData = (ArrayList<String>) sheetData.get("columnName");
@@ -208,10 +258,17 @@ public class UploadWorkbookService {
             return result;
         }
 
-        for (int i = 0; i < dbColumnNames.size(); i++) {
-            if (!dbColumnNames.get(i).equals(sheetColumnNames.get(i))) {
+        for (int i = 0; i < sheetColumnNames.size(); i++) {
+            boolean isMatch = false;
+            for (String dbColumnName : dbColumnNames) {
+                if (sheetColumnNames.get(i).equals(dbColumnName)) {
+                    isMatch = true;
+                    break;
+                }
+            }
+            if (!isMatch) {
                 result.put("isValid", false);
-                result.put("errorMessage", String.format("컬럼명이 일치하지 않습니다. (행: %d, 열: %d, 컬럼: %s)", 2, i + 1, sheetColumnNames.get(i)));
+                result.put("errorMessage", String.format("컬럼명이 일치하지 않습니다. (컬럼: %s, 행: %d, 열: %d)", sheetColumnNames.get(i), 2, i + 1));
                 return result;
             }
         }
@@ -225,13 +282,14 @@ public class UploadWorkbookService {
      * @description : validation - 데이터 타입 체크
      *
      */
-    public static Map<String, Object> validateDataTypes(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+    public static Map<String, Object> validateDataTypes(List<ResTargetTableSchemaInfo> schemaInfo, Map<String, Object> sheetData) {
         Map<String, Object> result = new HashMap<>();
         Map<String, String> dbColumnTypes = new HashMap<>();
-        for (Map<String, Object> columnInfo : schemaInfo) {
-            dbColumnTypes.put((String) columnInfo.get("COLUMN_NAME"), (String) columnInfo.get("DATA_TYPE"));
+        for (ResTargetTableSchemaInfo columnInfo : schemaInfo) {
+            dbColumnTypes.put(columnInfo.getCOLUMN_NAME(), columnInfo.getDATA_TYPE());
         }
 
+        ArrayList<String> columnNames = (ArrayList<String>) sheetData.get("columnName");
         ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
         if (rowData.isEmpty()) {
             result.put("isValid", false);
@@ -239,21 +297,19 @@ public class UploadWorkbookService {
             return result;
         }
 
-        for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
-            HashMap<String, Object> row = rowData.get(rowIndex);
-            int columnIndex = 0;
-            for (Map.Entry<String, Object> entry : row.entrySet()) {
-                String columnName = entry.getKey();
-                Object value = entry.getValue();
-                String expectedType = dbColumnTypes.get(columnName);
+        for (int columnIndex = 0; columnIndex < columnNames.size(); columnIndex++) {
+            String columnName = columnNames.get(columnIndex);
+            String expectedType = dbColumnTypes.get(columnName);
+
+            for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
+                HashMap<String, Object> row = rowData.get(rowIndex);
+                Object value = row.get(columnName);
 
                 if (expectedType == null || !isTypeMatching(value, expectedType)) {
                     result.put("isValid", false);
-                    result.put("errorMessage", String.format("데이터 타입이 일치하지 않습니다. (행: %d, 열: %s, 값: %s, 컬럼: %s, 기대 타입: %s)", rowIndex + 1, columnIndex + 1, value, columnName, expectedType));
-
+                    result.put("errorMessage", String.format("데이터 타입이 일치하지 않습니다. (행: %d, 열: %d, 값: %s, 컬럼: %s, 기대 타입: %s)", rowIndex + 3, columnIndex + 1, value, columnName, expectedType));
                     return result;
                 }
-                columnIndex++;
             }
         }
 
@@ -291,15 +347,16 @@ public class UploadWorkbookService {
      * @description : validation - 데이터 길이 체크
      *
      */
-    public static Map<String, Object> validateColumnLengths(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+    public static Map<String, Object> validateColumnLengths(List<ResTargetTableSchemaInfo> schemaInfo, Map<String, Object> sheetData) {
         Map<String, Object> result = new HashMap<>();
         Map<String, Integer> dbColumnLengths = new HashMap<>();
         Map<String, String> dbColumnTypes = new HashMap<>();
-        for (Map<String, Object> columnInfo : schemaInfo) {
-            dbColumnLengths.put((String) columnInfo.get("COLUMN_NAME"), (Integer) columnInfo.get("CHARACTER_MAXIMUM_LENGTH"));
-            dbColumnTypes.put((String) columnInfo.get("COLUMN_NAME"), (String) columnInfo.get("DATA_TYPE"));
+        for (ResTargetTableSchemaInfo columnInfo : schemaInfo) {
+            dbColumnLengths.put(columnInfo.getCOLUMN_NAME(), columnInfo.getCHARACTER_MAXIMUM_LENGTH());
+            dbColumnTypes.put(columnInfo.getCOLUMN_NAME(), columnInfo.getDATA_TYPE());
         }
 
+        ArrayList<String> columnNames = (ArrayList<String>) sheetData.get("columnName");
         ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
         if (rowData.isEmpty()) {
             result.put("isValid", false);
@@ -309,9 +366,9 @@ public class UploadWorkbookService {
 
         for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
             HashMap<String, Object> row = rowData.get(rowIndex);
-            for (Map.Entry<String, Object> entry : row.entrySet()) {
-                String columnName = entry.getKey();
-                Object value = entry.getValue();
+            for (int columnIndex = 0; columnIndex < columnNames.size(); columnIndex++) {
+                String columnName = columnNames.get(columnIndex);
+                Object value = row.get(columnName);
                 Integer maxLength = dbColumnLengths.get(columnName);
                 String dataType = dbColumnTypes.get(columnName);
 
@@ -322,7 +379,7 @@ public class UploadWorkbookService {
                 if (dataType != null && (dataType.equalsIgnoreCase("varchar") || dataType.equalsIgnoreCase("char") || dataType.equalsIgnoreCase("text"))) {
                     if (value instanceof String && ((String) value).length() > maxLength) {
                         result.put("isValid", false);
-                        result.put("errorMessage", String.format("컬럼 길이가 초과되었습니다. (행: %d, 컬럼: %s, 값: %s)", rowIndex + 1, columnName, value));
+                        result.put("errorMessage", String.format("컬럼 길이가 초과되었습니다. (행: %d, 열: %d, 컬럼: %s, 값: %s)", rowIndex + 3, columnIndex + 1, columnName, value));
                         return result;
                     }
                 }
@@ -338,13 +395,14 @@ public class UploadWorkbookService {
      * @description : validation - NULL여부 체크
      *
      */
-    public static Map<String, Object> validateNullability(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+    public static Map<String, Object> validateNullability(List<ResTargetTableSchemaInfo> schemaInfo, Map<String, Object> sheetData) {
         Map<String, Object> result = new HashMap<>();
         Map<String, Boolean> dbColumnNullability = new HashMap<>();
-        for (Map<String, Object> columnInfo : schemaInfo) {
-            dbColumnNullability.put((String) columnInfo.get("COLUMN_NAME"), "YES".equals(columnInfo.get("IS_NULLABLE")));
+        for (ResTargetTableSchemaInfo columnInfo : schemaInfo) {
+            dbColumnNullability.put(columnInfo.getCOLUMN_NAME(), "YES".equals(columnInfo.getIS_NULLABLE()));
         }
 
+        ArrayList<String> columnNames = (ArrayList<String>) sheetData.get("columnName");
         ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
         if (rowData.isEmpty()) {
             result.put("isValid", false);
@@ -354,18 +412,18 @@ public class UploadWorkbookService {
 
         for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
             HashMap<String, Object> row = rowData.get(rowIndex);
-            for (Map.Entry<String, Object> entry : row.entrySet()) {
-                String columnName = entry.getKey();
-                Object value = entry.getValue();
+            for (int columnIndex = 0; columnIndex < columnNames.size(); columnIndex++) {
+                String columnName = columnNames.get(columnIndex);
+                Object value = row.get(columnName);
                 Boolean isNullable = dbColumnNullability.get(columnName);
 
                 if (isNullable == null) {
                     continue;
                 }
 
-                if (!isNullable && value == null) {
+                if (!isNullable && StringUtil.isEmpty(value)) {
                     result.put("isValid", false);
-                    result.put("errorMessage", String.format("NULL 값을 허용하지 않는 컬럼에 NULL 값이 있습니다. (행: %d, 컬럼: %s)", rowIndex + 1, columnName));
+                    result.put("errorMessage", String.format("NULL 값을 허용하지 않는 컬럼에 NULL 값이 있습니다. (행: %d, 열: %d, 컬럼: %s)", rowIndex + 3, columnIndex + 1, columnName));
                     return result;
                 }
             }
@@ -380,12 +438,12 @@ public class UploadWorkbookService {
      * @description : validation - PK중복여부 체크
      *
      */
-    public static Map<String, Object> validatePrimaryKeyUniqueness(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+    public static Map<String, Object> validatePrimaryKeyUniqueness(List<ResTargetTableSchemaInfo> schemaInfo, Map<String, Object> sheetData) {
         Map<String, Object> result = new HashMap<>();
         List<String> primaryKeyColumns = new ArrayList<>();
-        for (Map<String, Object> columnInfo : schemaInfo) {
-            if ("PRI".equals(columnInfo.get("COLUMN_KEY"))) {
-                primaryKeyColumns.add((String) columnInfo.get("COLUMN_NAME"));
+        for (ResTargetTableSchemaInfo columnInfo : schemaInfo) {
+            if ("PRI".equals(columnInfo.getCOLUMN_KEY())) {
+                primaryKeyColumns.add(columnInfo.getCOLUMN_NAME());
             }
         }
 
@@ -398,17 +456,20 @@ public class UploadWorkbookService {
 
         Set<String> primaryKeySet = new HashSet<>();
 
-        for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
-            HashMap<String, Object> row = rowData.get(rowIndex);
-            StringBuilder primaryKeyValue = new StringBuilder();
-            for (String pkColumn : primaryKeyColumns) {
-                primaryKeyValue.append(row.get(pkColumn)).append("|");
-            }
+        if (primaryKeyColumns.size() > 1) {
+            for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
+                HashMap<String, Object> row = rowData.get(rowIndex);
+                StringBuilder primaryKeyValue = new StringBuilder();
+                for (String pkColumn : primaryKeyColumns) {
+                    primaryKeyValue.append(row.get(pkColumn)).append("|");
+                }
 
-            if (!primaryKeySet.add(primaryKeyValue.toString())) {
-                result.put("isValid", false);
-                result.put("errorMessage", String.format("중복된 PK 값이 있습니다. (행: %d, PK 값: %s)", rowIndex + 1, primaryKeyValue.toString()));
-                return result;
+                if (!primaryKeySet.add(primaryKeyValue.toString())) {
+                    String primaryKeyValueRes = primaryKeyValue.toString().substring(0, primaryKeyValue.toString().length() - 1);
+                    result.put("isValid", false);
+                    result.put("errorMessage", String.format("중복된 PK 값이 있습니다. (행: %d, PK 값: %s)", rowIndex + 3, primaryKeyValueRes));
+                    return result;
+                }
             }
         }
 
@@ -478,21 +539,24 @@ public class UploadWorkbookService {
                                         }
                                     } else if(rownum >= startDataRow
                                             && cellDatas_data != null) {
-                                        cellDatas_data.add(data);
+                                        cellDatas_data.add(cell.getDateCellValue());
                                     }
                                 } else { // 숫자형식인 경우
                                     double ddata = cell.getNumericCellValue();
-                                    data = String.valueOf(ddata);
 
                                     if(rownum == -1) {
-                                        headerNames_data.add(cell.getNumericCellValue());
+                                        headerNames_data.add(data);
                                     } else if(rownum == columnRow) {
 //                                        if(listColNames == null && dbColumnId_data != null) {
                                         if(dbColumnId_data != null) {
-                                            dbColumnId_data.add(cell.getNumericCellValue());
+                                            dbColumnId_data.add(data);
                                         }
                                     } else if(rownum >= startDataRow && cellDatas_data != null) {
-                                        cellDatas_data.add(cell.getNumericCellValue());
+                                        if (ddata == Math.floor(ddata)) { // 정수인 경우
+                                            cellDatas_data.add((int) ddata);
+                                        } else { // 실수인 경우
+                                            cellDatas_data.add(ddata);
+                                        }
                                     }
                                 }
 

@@ -133,12 +133,14 @@
 		style: "my-right",
 		dataType: "numeric",
 		formatString: "#,##0",
+		xlsxNumeric: true, // 엑셀에 실제 숫자값으로 내보내기 함.
 		width: 100
 	}, {
 		dataField: "pubdate",
 		headerText: "출판일",
 		dataType: "date",
 		formatString: "yyyy. mm. dd",
+		xlsxDate: true, // 엑셀 내보내기 시 날짜 시스템 적용
 		width: 100
 	}, {
 		dataField: "memo",
@@ -272,7 +274,7 @@
 headerEngGridData.push({ // 테스트용 데이터
     "isbn": "8925555980 9788925555980",
     "title": "구글의 아침은 자유가 시작된다 (구글 인사 책임자가 직접 공개하는 인재 등용의 비밀)",
-    "author": 123,
+    "author": "라즐로 복",
     "publisher": "알에이치코리아",
     "price": 18000,
     "pubdate": "2015. 05. 14",
