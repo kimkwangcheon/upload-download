@@ -12,7 +12,24 @@
         </foreach>
     </insert>
 
+    <select id="getTargetTableSchemaInfo" parameterType="string" resultType="java.util.Map">
+        SELECT
+            COLUMN_NAME,
+            DATA_TYPE,
+            CHARACTER_MAXIMUM_LENGTH,
+            IS_NULLABLE,
+            COLUMN_KEY
+          FROM
+            INFORMATION_SCHEMA.COLUMNS
+         WHERE TABLE_SCHEMA = #{tableSchema}
+           AND TABLE_NAME = #{tableName}
+    </select>
+
     <insert id="insertBooks">
-        INSERT INTO test.books
+        INSERT INTO test.books (isbn, title, author, publisher, price, pubdate, memo)
+        VALUES
+        <foreach collection="data" item="item" separator=",">
+        ( #{item.isbn}, #{item.title}, #{item.author}, #{item.publisher}, #{item.price}, #{item.pubdate}, #{item.memo} )
+        </foreach>
     </insert>
 </mapper>

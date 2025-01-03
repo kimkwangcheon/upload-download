@@ -207,6 +207,10 @@
 		var columnLayout = [{
 			dataField: "isbn",
 			headerText: "ISBN",
+			headerTooltip: { // 헤더 툴팁 표시 HTML 양식
+				show: true,
+				tooltipHtml: '<div style="width:120px;"><p>isbn</p><p>툴팁에 나타내고자 하는 내용과 스타일을 자유롭게 설정할 수 있습니다.</p></div>'
+			},
 			width: 200
 		}, {
 			dataField: "title",
@@ -244,6 +248,8 @@
 		}];
 
 		var gridProps = {
+			//showRowCheckColumn: false,
+			showRowNumColumn: false,
 			editable: false,
 			//rowNumColumnWidth: 50,
 			fillColumnSizeMode: true
@@ -266,7 +272,7 @@
 headerEngGridData.push({ // 테스트용 데이터
     "isbn": "8925555980 9788925555980",
     "title": "구글의 아침은 자유가 시작된다 (구글 인사 책임자가 직접 공개하는 인재 등용의 비밀)",
-    "author": "라즐로 복",
+    "author": 123,
     "publisher": "알에이치코리아",
     "price": 18000,
     "pubdate": "2015. 05. 14",
@@ -293,7 +299,7 @@ headerEngGridData.push({ // 테스트용 데이터
 
 	// 엑셀 업로드
 	function uploadExcel() {
-		document.getElementById("uploadExcel").click()
+		document.getElementById("uploadExcel").click();
 	}
 
 	// count 수만큼  데이터 생성

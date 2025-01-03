@@ -33,7 +33,7 @@ public class UploadWorkbookService {
         this.uploadMapper = uploadMapper;
     }
 
-    public void insertBooks(List<Map<String, Object>> data) {
+    public void insertBooks(ArrayList<HashMap<String, Object>> data) {
         uploadMapper.insertBooks(data);
     }
 
@@ -139,9 +139,31 @@ public class UploadWorkbookService {
         //// validation
         // validation: 컬럼명, 컬럼타입, 컬럼길이, null허용여부, PK중복여부
         // ㄴ 컬럼명: 첫행 건너뛰고, 두번째 행(영문명)을 DB컬럼명과 비교 체크 (validation: 컬럼명)
+        List<Map<String, Object>> schemaInfo = uploadMapper.getTargetTableSchemaInfo("test", "books");
+        // isValid가 false인 경우 if문으로 빠져나가도록 구현
+        response.putAll(validateColumnNames(schemaInfo, sheetData));    // 컬럼명
+        if (!(Boolean) response.get("isValid")) {
+            return response;
+        }
+        response.putAll(validateDataTypes(schemaInfo, sheetData));      // 컬럼타입
+        if (!(Boolean) response.get("isValid")) {
+            return response;
+        }
+        response.putAll(validateColumnLengths(schemaInfo, sheetData));  // 컬럼길이
+        if (!(Boolean) response.get("isValid")) {
+            return response;
+        }
+        response.putAll(validateNullability(schemaInfo, sheetData));    // null허용여부
+        if (!(Boolean) response.get("isValid")) {
+            return response;
+        }
+        response.putAll(validatePrimaryKeyUniqueness(schemaInfo, sheetData));   // PK중복여부
+        if (!(Boolean) response.get("isValid")) {
+            return response;
+        }
 
         // DB 저장
-//        uploadMapper.insertBooks((List<Map<String, Object>>) sheetData.get("rowData"));
+        insertBooks((ArrayList<HashMap<String, Object>>) sheetData.get("rowData"));
 
         // 자원 반납
         if(fileKind.equals("xls") && xlsWorkbook != null) {
@@ -160,6 +182,239 @@ public class UploadWorkbookService {
         return response;
     }
 
+    /**
+     *
+     * @description : validation - 컬럼명 체크
+     *
+     */
+    public static Map<String, Object> validateColumnNames(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+        Map<String, Object> result = new HashMap<>();
+        List<String> dbColumnNames = new ArrayList<>();
+        for (Map<String, Object> columnInfo : schemaInfo) {
+            dbColumnNames.add((String) columnInfo.get("COLUMN_NAME"));
+        }
+
+        ArrayList<String> rowData = (ArrayList<String>) sheetData.get("columnName");
+        if (rowData.isEmpty()) {
+            result.put("isValid", false);
+            result.put("errorMessage", "컬럼명이 비어 있습니다.");
+            return result;
+        }
+        List<String> sheetColumnNames = new ArrayList<>(rowData);
+
+        if (dbColumnNames.size() != sheetColumnNames.size()) {
+            result.put("isValid", false);
+            result.put("errorMessage", "컬럼 개수가 일치하지 않습니다.");
+            return result;
+        }
+
+        for (int i = 0; i < dbColumnNames.size(); i++) {
+            if (!dbColumnNames.get(i).equals(sheetColumnNames.get(i))) {
+                result.put("isValid", false);
+                result.put("errorMessage", String.format("컬럼명이 일치하지 않습니다. (행: %d, 열: %d, 컬럼: %s)", 2, i + 1, sheetColumnNames.get(i)));
+                return result;
+            }
+        }
+
+        result.put("isValid", true);
+        return result;
+    }
+
+    /**
+     *
+     * @description : validation - 데이터 타입 체크
+     *
+     */
+    public static Map<String, Object> validateDataTypes(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, String> dbColumnTypes = new HashMap<>();
+        for (Map<String, Object> columnInfo : schemaInfo) {
+            dbColumnTypes.put((String) columnInfo.get("COLUMN_NAME"), (String) columnInfo.get("DATA_TYPE"));
+        }
+
+        ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
+        if (rowData.isEmpty()) {
+            result.put("isValid", false);
+            result.put("errorMessage", "데이터가 비어 있습니다.");
+            return result;
+        }
+
+        for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
+            HashMap<String, Object> row = rowData.get(rowIndex);
+            int columnIndex = 0;
+            for (Map.Entry<String, Object> entry : row.entrySet()) {
+                String columnName = entry.getKey();
+                Object value = entry.getValue();
+                String expectedType = dbColumnTypes.get(columnName);
+
+                if (expectedType == null || !isTypeMatching(value, expectedType)) {
+                    result.put("isValid", false);
+                    result.put("errorMessage", String.format("데이터 타입이 일치하지 않습니다. (행: %d, 열: %s, 값: %s, 컬럼: %s, 기대 타입: %s)", rowIndex + 1, columnIndex + 1, value, columnName, expectedType));
+
+                    return result;
+                }
+                columnIndex++;
+            }
+        }
+
+        result.put("isValid", true);
+        return result;
+    }
+    private static boolean isTypeMatching(Object value, String expectedType) {
+        switch (expectedType.toUpperCase()) {
+            case "VARCHAR":
+            case "CHAR":
+            case "TEXT":
+                return value instanceof String;
+            case "INT":
+            case "INTEGER":
+            case "BIGINT":
+            case "SMALLINT":
+            case "TINYINT":
+                return value instanceof Integer;
+            case "DECIMAL":
+            case "NUMERIC":
+            case "FLOAT":
+            case "DOUBLE":
+                return value instanceof Number;
+            case "DATE":
+            case "TIME":
+            case "TIMESTAMP":
+                return value instanceof java.util.Date;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     *
+     * @description : validation - 데이터 길이 체크
+     *
+     */
+    public static Map<String, Object> validateColumnLengths(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Integer> dbColumnLengths = new HashMap<>();
+        Map<String, String> dbColumnTypes = new HashMap<>();
+        for (Map<String, Object> columnInfo : schemaInfo) {
+            dbColumnLengths.put((String) columnInfo.get("COLUMN_NAME"), (Integer) columnInfo.get("CHARACTER_MAXIMUM_LENGTH"));
+            dbColumnTypes.put((String) columnInfo.get("COLUMN_NAME"), (String) columnInfo.get("DATA_TYPE"));
+        }
+
+        ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
+        if (rowData.isEmpty()) {
+            result.put("isValid", false);
+            result.put("errorMessage", "데이터가 비어 있습니다.");
+            return result;
+        }
+
+        for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
+            HashMap<String, Object> row = rowData.get(rowIndex);
+            for (Map.Entry<String, Object> entry : row.entrySet()) {
+                String columnName = entry.getKey();
+                Object value = entry.getValue();
+                Integer maxLength = dbColumnLengths.get(columnName);
+                String dataType = dbColumnTypes.get(columnName);
+
+                if (maxLength == null) {
+                    continue;
+                }
+
+                if (dataType != null && (dataType.equalsIgnoreCase("varchar") || dataType.equalsIgnoreCase("char") || dataType.equalsIgnoreCase("text"))) {
+                    if (value instanceof String && ((String) value).length() > maxLength) {
+                        result.put("isValid", false);
+                        result.put("errorMessage", String.format("컬럼 길이가 초과되었습니다. (행: %d, 컬럼: %s, 값: %s)", rowIndex + 1, columnName, value));
+                        return result;
+                    }
+                }
+            }
+        }
+
+        result.put("isValid", true);
+        return result;
+    }
+
+    /**
+     *
+     * @description : validation - NULL여부 체크
+     *
+     */
+    public static Map<String, Object> validateNullability(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Boolean> dbColumnNullability = new HashMap<>();
+        for (Map<String, Object> columnInfo : schemaInfo) {
+            dbColumnNullability.put((String) columnInfo.get("COLUMN_NAME"), "YES".equals(columnInfo.get("IS_NULLABLE")));
+        }
+
+        ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
+        if (rowData.isEmpty()) {
+            result.put("isValid", false);
+            result.put("errorMessage", "데이터가 비어 있습니다.");
+            return result;
+        }
+
+        for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
+            HashMap<String, Object> row = rowData.get(rowIndex);
+            for (Map.Entry<String, Object> entry : row.entrySet()) {
+                String columnName = entry.getKey();
+                Object value = entry.getValue();
+                Boolean isNullable = dbColumnNullability.get(columnName);
+
+                if (isNullable == null) {
+                    continue;
+                }
+
+                if (!isNullable && value == null) {
+                    result.put("isValid", false);
+                    result.put("errorMessage", String.format("NULL 값을 허용하지 않는 컬럼에 NULL 값이 있습니다. (행: %d, 컬럼: %s)", rowIndex + 1, columnName));
+                    return result;
+                }
+            }
+        }
+
+        result.put("isValid", true);
+        return result;
+    }
+
+    /**
+     *
+     * @description : validation - PK중복여부 체크
+     *
+     */
+    public static Map<String, Object> validatePrimaryKeyUniqueness(List<Map<String, Object>> schemaInfo, Map<String, Object> sheetData) {
+        Map<String, Object> result = new HashMap<>();
+        List<String> primaryKeyColumns = new ArrayList<>();
+        for (Map<String, Object> columnInfo : schemaInfo) {
+            if ("PRI".equals(columnInfo.get("COLUMN_KEY"))) {
+                primaryKeyColumns.add((String) columnInfo.get("COLUMN_NAME"));
+            }
+        }
+
+        ArrayList<HashMap<String, Object>> rowData = (ArrayList<HashMap<String, Object>>) sheetData.get("rowData");
+        if (rowData.isEmpty()) {
+            result.put("isValid", false);
+            result.put("errorMessage", "데이터가 비어 있습니다.");
+            return result;
+        }
+
+        Set<String> primaryKeySet = new HashSet<>();
+
+        for (int rowIndex = 0; rowIndex < rowData.size(); rowIndex++) {
+            HashMap<String, Object> row = rowData.get(rowIndex);
+            StringBuilder primaryKeyValue = new StringBuilder();
+            for (String pkColumn : primaryKeyColumns) {
+                primaryKeyValue.append(row.get(pkColumn)).append("|");
+            }
+
+            if (!primaryKeySet.add(primaryKeyValue.toString())) {
+                result.put("isValid", false);
+                result.put("errorMessage", String.format("중복된 PK 값이 있습니다. (행: %d, PK 값: %s)", rowIndex + 1, primaryKeyValue.toString()));
+                return result;
+            }
+        }
+
+        result.put("isValid", true);
+        return result;
+    }
 
 
     /**
