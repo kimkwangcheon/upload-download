@@ -44,7 +44,7 @@ spring:
   ## [DEV] devtools 세팅 (파일 수정 시 서버 재시작 없이 바로 적용)
   devtools:
     restart:
-      additional-paths: src/main/resources
+      additional-paths: src/main/java,src/main/resources
       exclude: static/**,public/**
 
   ## 엑셀 파일 업로드 세팅
