@@ -1,3 +1,23 @@
+## 서버 세팅 (java.io.EOFException 에러 관련 설정임. 이 에러는 클라이언트가 서버와의 연결을 예기치 않게 끊었을 때 발생할 수 있음)
+server:
+  port: 8088
+    # HTTP Keep-Alive 설정(1): 설정을 활성화하여 클라이언트와 서버 간의 연결을 유지함
+    #  connection-timeout: 60000
+    # Tomcat 설정 조정: Tomcat의 타임아웃 설정을 늘려서 대량의 데이터를 처리할 수 있도록 함
+    #  tomcat:
+    #    connection-timeout: 60000
+    #    max-threads: 200
+  # HTTP Keep-Alive 설정(2)
+#    keep-alive-timeout: 60000
+#    max-connections: 10000
+
+# JSP 수정 시 서버 재시작 없이 바로 적용될 수 있게 설정
+# server:
+#   servlet:
+#     jsp:
+#       init-parameters:
+#         development: true
+
 spring:
   application:
     name: upload-download
@@ -44,7 +64,7 @@ spring:
   ## [DEV] devtools 세팅 (파일 수정 시 서버 재시작 없이 바로 적용)
   devtools:
     restart:
-      additional-paths: src/main/resources
+      additional-paths: src/main/java,src/main/resources
       exclude: static/**,public/**
 
   ## 엑셀 파일 업로드 세팅
@@ -57,27 +77,8 @@ spring:
 logging:
   level:
     root: debug
-    com.example: debug
+#    com.example: debug
 
 ## MyBatis 세팅
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
-
-## 서버 세팅 (java.io.EOFException 에러 관련 설정임. 이 에러는 클라이언트가 서버와의 연결을 예기치 않게 끊었을 때 발생할 수 있음)
-server:
-  # HTTP Keep-Alive 설정(1): 설정을 활성화하여 클라이언트와 서버 간의 연결을 유지함
-  connection-timeout: 60000
-  # Tomcat 설정 조정: Tomcat의 타임아웃 설정을 늘려서 대량의 데이터를 처리할 수 있도록 함
-  tomcat:
-    connection-timeout: 60000
-    max-threads: 200
-    # HTTP Keep-Alive 설정(2)
-    keep-alive-timeout: 60000
-    max-connections: 10000
-
-# JSP 수정 시 서버 재시작 없이 바로 적용될 수 있게 설정
-# server:
-#   servlet:
-#     jsp:
-#       init-parameters:
-#         development: true
