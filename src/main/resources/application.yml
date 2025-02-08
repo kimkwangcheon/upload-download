@@ -30,10 +30,10 @@ spring:
       suffix: .jsp
 
   ## H2 DB 세팅
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
 
   ## 데이터베이스 세팅
   datasource:
@@ -51,11 +51,16 @@ spring:
 #    url: jdbc:h2:mem:test
 #    username: sa
 #    password:
-    # MYSQL - Local
+    # MYSQL - LOCAL
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/test?allowPublicKeyRetrieval=true&useSSL=false
+#    username: root
+#    password: 1234
+    # MYSQL - DEV
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: 1234
+    url: jdbc:mysql://122.41.20.2:3306/test?useSSL=false&allowPublicKeyRetrieval=true
+    username: kkc
+    password: dbMysqlHome1029
 
   sql:
     init:
@@ -76,8 +81,8 @@ spring:
 ## 로그 세팅
 logging:
   level:
-    root: debug
-#    com.example: debug
+#    root: debug
+    com.example: debug
 
 ## MyBatis 세팅
 mybatis:

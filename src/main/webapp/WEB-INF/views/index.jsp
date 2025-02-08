@@ -9,7 +9,7 @@
     <h1>index 페이지 입니다</h1>
     <h2>링크</h2>
     <ul>
-        <li><a href="export_bigdata.html">AuiGrid 테스트 페이지</a></li>
+        <li><a href="/AUIGrid-samples/export_bigdata.html">AuiGrid 테스트 페이지</a></li>
         <li><a href="/upload_test">엑셀 대용량 업로드 테스트 페이지</a></li>
         <li><a href="/naver_maps_test">네이버 지도 테스트 페이지</a></li>
     </ul>
