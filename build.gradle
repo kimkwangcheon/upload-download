@@ -37,7 +37,7 @@ dependencies {
 	implementation 'com.mysql:mysql-connector-j'  // mysql 커넥터 추가
 
 	// 소스 수정시 자동 빌드 (developmentOnly: 개발환경에서만 사용)
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation 'org.springframework.boot:spring-boot-devtools'
 
 	// jsp 관련
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'   // 톰캣: JSP 엔진
