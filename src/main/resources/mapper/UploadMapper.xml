@@ -11,4 +11,25 @@
         ( #{item.postal_code}, #{item.city}, #{item.city_english}, #{item.district}, #{item.district_english}, #{item.town}, #{item.town_english}, #{item.road_code}, #{item.road_name}, #{item.road_name_english}, #{item.underground}, #{item.building_main_number}, #{item.building_sub_number}, #{item.building_management_number}, #{item.bulk_delivery_name}, #{item.district_building_name}, #{item.legal_dong_code}, #{item.legal_dong_name}, #{item.ri_name}, #{item.administrative_dong_name}, #{item.mountain}, #{item.lot_main_number}, #{item.town_serial_number}, #{item.lot_sub_number}, #{item.old_postal_code}, #{item.postal_code_serial_number} )
         </foreach>
     </insert>
+
+    <select id="getTargetTableSchemaInfo" resultType="com.example.model.ResTargetTableSchemaInfo">
+        SELECT
+            COLUMN_NAME,
+            DATA_TYPE,
+            CHARACTER_MAXIMUM_LENGTH,
+            IS_NULLABLE,
+            COLUMN_KEY
+          FROM
+            INFORMATION_SCHEMA.COLUMNS
+         WHERE TABLE_SCHEMA = #{tableSchema}
+           AND TABLE_NAME = #{tableName}
+    </select>
+
+    <insert id="insertBooks">
+        INSERT INTO test.books (isbn, title, author, publisher, price, pubdate, memo)
+        VALUES
+        <foreach collection="data" item="item" separator=",">
+        ( #{item.isbn}, #{item.title}, #{item.author}, #{item.publisher}, #{item.price}, #{item.pubdate}, #{item.memo} )
+        </foreach>
+    </insert>
 </mapper>

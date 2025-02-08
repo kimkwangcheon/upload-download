@@ -16,4 +16,9 @@ public class PagePrintController {
     public String uploadTest() {
         return "upload_test";
     }
+
+    @RequestMapping(value = "/naver_maps_test", method = RequestMethod.GET)
+    public String naverMapsTest() {
+        return "naver_maps_test";
+    }
 }
