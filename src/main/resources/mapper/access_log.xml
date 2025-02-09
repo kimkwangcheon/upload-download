@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.repository.AccessMapper">
+    <insert id="saveAccessLog" parameterType="com.example.entity.AccessLog">
+        INSERT INTO test.access_log (
+              id
+            , ip_address
+            , created_at
+            , page_path
+            , restapi_method
+            , restapi_url
+            , page_exists
+            , file_extension
+            , error_occurred
+            , error_message
+        ) VALUES (
+              #{id}
+            , #{ipAddress}
+            , #{createdAt}
+            , #{pagePath}
+            , #{restapiMethod}
+            , #{restapiUrl}
+            , #{pageExists}
+            , #{fileExtension}
+            , #{errorOccurred}
+            , #{errorMessage}
+        )
+    </insert>
+</mapper>
