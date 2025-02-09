@@ -24,7 +24,7 @@ public class AccessLogInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         boolean errorOccurred = false;
         String errorMessage = null;
 
@@ -42,19 +42,19 @@ public class AccessLogInterceptor implements HandlerInterceptor {
             } catch (UnknownHostException e) {
                 errorOccurred = true;
                 errorMessage = "Error converting IP address: ";
+                errorMessage = (e.getMessage() == null) ? errorMessage : errorMessage.concat(e.getMessage());
                 log.error("{}{}", errorMessage, e.getMessage(), e);
                 accessLogService.saveAccessLog(ipAddress, null, null, null,
-                            null, null, errorOccurred, errorMessage.concat(e.getMessage()));
+                            null, null, errorOccurred, errorMessage);
             }
 
-            String pagePath = request.getRequestURI();
-            String restapiMethod = request.getMethod();
-            String restapiUrl = request.getRequestURL().toString();
+            String reqMethod = request.getMethod();
+            String reqUrl = request.getRequestURI();
+            String reqUrlFull = request.getRequestURL().toString();
 
             // 매핑된 컨트롤러명 가져오기
             String controllerName = null;
-            if (handler instanceof HandlerMethod) {
-                HandlerMethod handlerMethod = (HandlerMethod) handler;
+            if (handler instanceof HandlerMethod handlerMethod) {
                 controllerName = handlerMethod.getBeanType().getSimpleName();
             }
 
@@ -65,28 +65,38 @@ public class AccessLogInterceptor implements HandlerInterceptor {
             {
                 pageExists = true;
                 fileExtension = "jsp";
-                accessLogService.saveAccessLog(ipAddress, pagePath, restapiMethod, restapiUrl,
+                accessLogService.saveAccessLog(ipAddress, reqMethod, reqUrl, reqUrlFull,
                         pageExists, fileExtension, errorOccurred, errorMessage);
             }
 
-            if (pagePath.contains(".html")) {
-                String realPath = new File("src/main/resources/static" + pagePath).getAbsolutePath();
+            // 정적 데이터는 'html' 파일만 로그 저장
+            if (reqUrl.contains(".html")) {
+                String realPath = new File("src/main/resources/static" + reqUrl).getAbsolutePath();
                 File htmlFile = new File(realPath);
+                // 실제로 파일이 존재할 때만 로그 저장
                 if (htmlFile.exists()) {
                     pageExists = true;
                     fileExtension = "html";
-                    accessLogService.saveAccessLog(ipAddress, pagePath, restapiMethod, restapiUrl,
+                    accessLogService.saveAccessLog(ipAddress, reqMethod, reqUrl, reqUrlFull,
                             pageExists, fileExtension, errorOccurred, errorMessage);
                 }
             }
 
+            // restapi 호출 시 로그 저장
+            if (reqUrl.contains("/api/v1")) {
+                pageExists = false;
+                fileExtension = null;
+                accessLogService.saveAccessLog(ipAddress, reqMethod, reqUrl, reqUrlFull,
+                        pageExists, fileExtension, errorOccurred, errorMessage);
+            }
+
             return true;
+
         } catch (Exception e) {
-            errorOccurred = true;
-            errorMessage = "Error in AccessLogInterceptor: ";
-            log.error("{}{}", errorMessage, e.getMessage(), e);
+            errorMessage = "Error in AccessLogInterceptor preHandle: " + e.getMessage();
+            log.error("{}", errorMessage);
             accessLogService.saveAccessLog(null, null, null, null,
-                        null, null, errorOccurred, errorMessage.concat(e.getMessage()));
+                    null, null, true, errorMessage);
             return false;
         }
     }

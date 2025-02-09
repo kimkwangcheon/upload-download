@@ -6,41 +6,42 @@
 <mapper namespace="com.example.repository.AccessMapper">
     <insert id="saveAccessLog" parameterType="com.example.entity.AccessLog">
         INSERT INTO test.access_log (
-              id
-            , ip_address
-            , created_at
-            , page_path
-            , restapi_method
-            , restapi_url
-            , page_exists
-            , file_extension
-            , error_occurred
-            , error_message
+            ip_address
+          , req_method
+          , req_url
+          , req_url_full
+          , page_exists
+          , file_extension
+          , error_occurred
+          , error_message
+          , created_at_kst
+          , created_at_ldt
         ) VALUES (
-              #{id}
-            , #{ipAddress}
-            , #{createdAt}
-            , #{pagePath}
-            , #{restapiMethod}
-            , #{restapiUrl}
-            , #{pageExists}
-            , #{fileExtension}
-            , #{errorOccurred}
-            , #{errorMessage}
+            #{ipAddress}
+          , #{reqMethod}
+          , #{reqUrl}
+          , #{reqUrlFull}
+          , #{pageExists}
+          , #{fileExtension}
+          , #{errorOccurred}
+          , #{errorMessage}
+          , #{createdAtKst}
+          , #{createdAtLdt}
         )
     </insert>
 
     <select id="selectAccessLog" resultType="com.example.entity.AccessLog">
         SELECT id
-            , ip_address        as ipAddress
-            , created_at        as createdAt
-            , page_path         as pagePath
-            , restapi_method    as restapiMethod
-            , restapi_url       as restapiUrl
-            , page_exists       as pageExists
-            , file_extension    as fileExtension
-            , error_occurred    as errorOccurred
-            , error_message     as errorMessage
+             , ip_address        as ipAddress
+             , req_method        as reqMethod
+             , req_url           as reqUrl
+             , req_url_full      as reqUrlFull
+             , page_exists       as pageExists
+             , file_extension    as fileExtension
+             , error_occurred    as errorOccurred
+             , error_message     as errorMessage
+             , created_at_kst    as createdAtKst
+             , created_at_ldt    as createdAtLdt
           FROM test.access_log
          ORDER BY id DESC
     </select>

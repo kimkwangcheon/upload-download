@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Log4j2
@@ -18,19 +17,22 @@ public class AccessLogService {
         this.accessMapper = accessMapper;
     }
 
-    public void saveAccessLog(String ipAddress, String pagePath, String restapiMethod, String restapiUrl,
+    public void saveAccessLog(String ipAddress, String reqMethod, String reqUrl, String reqUrlFull,
                               Boolean pageExists, String fileExtension, Boolean errorOccurred, String errorMessage
-    ) {
+    ) throws Exception {
         AccessLog accessLog = new AccessLog();
         accessLog.setIpAddress(ipAddress);
-        accessLog.setCreatedAtWithTimeZone();
-        accessLog.setPagePath(pagePath);
-        accessLog.setRestapiMethod(restapiMethod);
-        accessLog.setRestapiUrl(restapiUrl);
+        accessLog.setReqMethod(reqMethod);
+        accessLog.setReqUrl(reqUrl);
+        accessLog.setReqUrlFull(reqUrlFull);
         accessLog.setPageExists(pageExists);
         accessLog.setFileExtension(fileExtension);
         accessLog.setErrorOccurred(errorOccurred);
         accessLog.setErrorMessage(errorMessage);
+        accessLog.setCreatedAtWithTimeZone();
+        accessLog.setCreatedAtLdt(LocalDateTime.now());
+        log.debug("[[[[[ZonedDateTime(Asia/Seoul)]]]]] {}, [[[[[LocalDateTime.now()]]]]] {}"
+                , accessLog.getCreatedAtKst(), accessLog.getCreatedAtLdt());
 
         try {
             accessLog.setErrorOccurred(false);
@@ -38,10 +40,10 @@ public class AccessLogService {
             accessMapper.saveAccessLog(accessLog);
             log.info("Access log saved");
         } catch (Exception e) {
-            accessLog.setErrorOccurred(true);
             accessLog.setErrorMessage("Error saving access log: " + e.getMessage());
             log.error("{}", accessLog.getErrorMessage(), e);
             accessMapper.saveAccessLog(accessLog);
+            throw new Exception(accessLog.getErrorMessage());
         }
     }
 
