@@ -62,7 +62,7 @@ spring:
 #    password: 1234
     # MYSQL - DEV
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://122.41.20.2:3306/test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT+9
+    url: jdbc:mysql://122.41.20.2:3306/test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     username: kkc
     password: dbMysqlHome1029
 

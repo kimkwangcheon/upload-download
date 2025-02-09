@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Log4j2
@@ -22,7 +23,7 @@ public class AccessLogService {
     ) {
         AccessLog accessLog = new AccessLog();
         accessLog.setIpAddress(ipAddress);
-        accessLog.setCreatedAt(LocalDateTime.now());
+        accessLog.setCreatedAtWithTimeZone();
         accessLog.setPagePath(pagePath);
         accessLog.setRestapiMethod(restapiMethod);
         accessLog.setRestapiUrl(restapiUrl);
