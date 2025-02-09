@@ -22,6 +22,10 @@ spring:
   application:
     name: upload-download
 
+  # TimeZone 설정
+  jackson:
+    time-zone: GMT+9
+
   ## JSP 세팅
   mvc:
     static-path-pattern: /**
