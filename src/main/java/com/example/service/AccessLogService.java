@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Log4j2
 @Service
@@ -41,5 +42,9 @@ public class AccessLogService {
             log.error("{}", accessLog.getErrorMessage(), e);
             accessMapper.saveAccessLog(accessLog);
         }
+    }
+
+    public List<AccessLog> selectAccessLog() {
+        return accessMapper.selectAccessLog();
     }
 }

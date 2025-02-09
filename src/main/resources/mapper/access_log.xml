@@ -29,4 +29,19 @@
             , #{errorMessage}
         )
     </insert>
+
+    <select id="selectAccessLog" resultType="com.example.entity.AccessLog">
+        SELECT id
+            , ip_address        as ipAddress
+            , created_at        as createdAt
+            , page_path         as pagePath
+            , restapi_method    as restapiMethod
+            , restapi_url       as restapiUrl
+            , page_exists       as pageExists
+            , file_extension    as fileExtension
+            , error_occurred    as errorOccurred
+            , error_message     as errorMessage
+          FROM test.access_log
+         ORDER BY id DESC
+    </select>
 </mapper>
