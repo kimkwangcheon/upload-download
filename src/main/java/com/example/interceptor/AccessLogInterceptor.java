@@ -1,6 +1,7 @@
 package com.example.interceptor;
 
 import com.example.service.AccessLogService;
+import com.example.util.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +30,16 @@ public class AccessLogInterceptor implements HandlerInterceptor {
         String errorMessage = null;
 
         try {
+            // 요청 정보 가져오기
+            String reqMethod = request.getMethod();
+            String reqUrl = request.getRequestURI();
+            String reqUrlFull = request.getRequestURL().toString();
+            // 요청 정보 - OS, 브라우저 정보 가져오기
+            String userAgent = request.getHeader("User-Agent");
+            String clientOS = CommonUtil.getClientOS(userAgent);
+            String clientBrowser = CommonUtil.getClientBrowser(userAgent);
+
+            // IP 주소 가져오기
             String ipAddress = request.getRemoteAddr();
             try {
                 if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
@@ -41,23 +52,16 @@ public class AccessLogInterceptor implements HandlerInterceptor {
                 }
             } catch (UnknownHostException e) {
                 errorOccurred = true;
-                errorMessage = "Error converting IP address: ";
+                errorMessage = "Error converting(ipv6->ipv4) IP address: ";
                 errorMessage = (e.getMessage() == null) ? errorMessage : errorMessage.concat(e.getMessage());
                 log.error("{}{}", errorMessage, e.getMessage(), e);
-                accessLogService.saveAccessLog(ipAddress, null, null, null,
-                            null, null, errorOccurred, errorMessage);
             }
-
-            String reqMethod = request.getMethod();
-            String reqUrl = request.getRequestURI();
-            String reqUrlFull = request.getRequestURL().toString();
 
             // 매핑된 컨트롤러명 가져오기
             String controllerName = null;
             if (handler instanceof HandlerMethod handlerMethod) {
                 controllerName = handlerMethod.getBeanType().getSimpleName();
             }
-
             // 페이지 존재 여부를 확인하는 로직 추가
             boolean pageExists = false;
             String fileExtension = null;
@@ -65,8 +69,8 @@ public class AccessLogInterceptor implements HandlerInterceptor {
             {
                 pageExists = true;
                 fileExtension = "jsp";
-                accessLogService.saveAccessLog(ipAddress, reqMethod, reqUrl, reqUrlFull,
-                        pageExists, fileExtension, errorOccurred, errorMessage);
+                accessLogService.saveAccessLog(ipAddress, clientOS, clientBrowser, userAgent, reqMethod,
+                        reqUrl, reqUrlFull, pageExists, fileExtension, errorOccurred, errorMessage);
             }
 
             // 정적 데이터는 'html' 파일만 로그 저장
@@ -77,8 +81,8 @@ public class AccessLogInterceptor implements HandlerInterceptor {
                 if (htmlFile.exists()) {
                     pageExists = true;
                     fileExtension = "html";
-                    accessLogService.saveAccessLog(ipAddress, reqMethod, reqUrl, reqUrlFull,
-                            pageExists, fileExtension, errorOccurred, errorMessage);
+                    accessLogService.saveAccessLog(ipAddress, clientOS, clientBrowser, userAgent, reqMethod,
+                            reqUrl, reqUrlFull, pageExists, fileExtension, errorOccurred, errorMessage);
                 }
             }
 
@@ -86,8 +90,8 @@ public class AccessLogInterceptor implements HandlerInterceptor {
             if (reqUrl.contains("/api/v1")) {
                 pageExists = false;
                 fileExtension = null;
-                accessLogService.saveAccessLog(ipAddress, reqMethod, reqUrl, reqUrlFull,
-                        pageExists, fileExtension, errorOccurred, errorMessage);
+                accessLogService.saveAccessLog(ipAddress, clientOS, clientBrowser, userAgent, reqMethod,
+                        reqUrl, reqUrlFull, pageExists, fileExtension, errorOccurred, errorMessage);
             }
 
             return true;
@@ -95,8 +99,8 @@ public class AccessLogInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             errorMessage = "Error in AccessLogInterceptor preHandle: " + e.getMessage();
             log.error("{}", errorMessage);
-            accessLogService.saveAccessLog(null, null, null, null,
-                    null, null, true, errorMessage);
+            accessLogService.saveAccessLog(null, null, null, null, null,
+                    null, null,null, null, true, errorMessage);
             return false;
         }
     }

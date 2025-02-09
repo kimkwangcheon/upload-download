@@ -6,33 +6,42 @@
 <mapper namespace="com.example.repository.AccessMapper">
     <insert id="saveAccessLog" parameterType="com.example.entity.AccessLog">
         INSERT INTO test.access_log (
-            ip_address
-          , req_method
-          , req_url
-          , req_url_full
-          , page_exists
-          , file_extension
-          , error_occurred
-          , error_message
-          , created_at_kst
-          , created_at_ldt
+              ip_address
+            , ip_agent_os
+            , ip_agent_browser
+            , ip_agent
+            , req_method
+            , req_url
+            , req_url_full
+            , page_exists
+            , file_extension
+            , error_occurred
+            , error_message
+            , created_at_kst
+            , created_at_ldt
         ) VALUES (
-            #{ipAddress}
-          , #{reqMethod}
-          , #{reqUrl}
-          , #{reqUrlFull}
-          , #{pageExists}
-          , #{fileExtension}
-          , #{errorOccurred}
-          , #{errorMessage}
-          , #{createdAtKst}
-          , #{createdAtLdt}
+              #{ipAddress}
+            , #{ipAgentOs}
+            , #{ipAgentBrowser}
+            , #{ipAgent}
+            , #{reqMethod}
+            , #{reqUrl}
+            , #{reqUrlFull}
+            , #{pageExists}
+            , #{fileExtension}
+            , #{errorOccurred}
+            , #{errorMessage}
+            , #{createdAtKst}
+            , #{createdAtLdt}
         )
     </insert>
 
     <select id="selectAccessLog" resultType="com.example.entity.AccessLog">
         SELECT id
              , ip_address        as ipAddress
+             , ip_agent_os       as ipAgentOs
+             , ip_agent_browser  as ipAgentBrowser
+             , ip_agent          as ipAgent
              , req_method        as reqMethod
              , req_url           as reqUrl
              , req_url_full      as reqUrlFull

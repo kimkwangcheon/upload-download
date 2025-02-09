@@ -17,11 +17,15 @@ public class AccessLogService {
         this.accessMapper = accessMapper;
     }
 
-    public void saveAccessLog(String ipAddress, String reqMethod, String reqUrl, String reqUrlFull,
-                              Boolean pageExists, String fileExtension, Boolean errorOccurred, String errorMessage
+    public void saveAccessLog(String ipAddress, String clientOS, String clientBrowser, String userAgent,
+                              String reqMethod, String reqUrl, String reqUrlFull, Boolean pageExists,
+                              String fileExtension, Boolean errorOccurred, String errorMessage
     ) throws Exception {
         AccessLog accessLog = new AccessLog();
         accessLog.setIpAddress(ipAddress);
+        accessLog.setIpAgentOs(clientOS);
+        accessLog.setIpAgentBrowser(clientBrowser);
+        accessLog.setIpAgent(userAgent);
         accessLog.setReqMethod(reqMethod);
         accessLog.setReqUrl(reqUrl);
         accessLog.setReqUrlFull(reqUrlFull);

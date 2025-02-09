@@ -13,12 +13,15 @@ import java.time.ZonedDateTime;
 @Setter
 public class AccessLog {
     private String ipAddress;
+    private String ipAgentOs;
+    private String ipAgentBrowser;
+    private String ipAgent;
     private String reqMethod;
     private String reqUrl;
     private String reqUrlFull;
-    private boolean pageExists;
+    private Boolean pageExists;
     private String fileExtension;
-    private boolean errorOccurred;
+    private Boolean errorOccurred;
     private String errorMessage;
     private ZonedDateTime createdAtKst;
     private LocalDateTime createdAtLdt;
