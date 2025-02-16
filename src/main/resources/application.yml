@@ -20,7 +20,7 @@ server:
 
 spring:
   application:
-    name: upload-download
+    name: kkc-test-web
 
   # TimeZone 설정
   jackson:

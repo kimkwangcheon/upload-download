@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.TimeZone;
 
 @SpringBootApplication
-public class UploadDownloadApplication {
+public class KkcTestWebApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UploadDownloadApplication.class, args);
+		SpringApplication.run(KkcTestWebApplication.class, args);
 	}
 
 	@PostConstruct
