@@ -7,6 +7,7 @@
     <insert id="saveAccessLog" parameterType="com.example.entity.AccessLog">
         INSERT INTO test.access_log (
               ip_address
+            , ip_agent_device
             , ip_agent_os
             , ip_agent_browser
             , ip_agent
@@ -21,6 +22,7 @@
             , created_at_ldt
         ) VALUES (
               #{ipAddress}
+            , #{ipAgentDevice}
             , #{ipAgentOs}
             , #{ipAgentBrowser}
             , #{ipAgent}
@@ -38,7 +40,9 @@
 
     <select id="selectAccessLog" resultType="com.example.entity.AccessLog">
         SELECT id
+             , created_at_kst    as createdAtKst
              , ip_address        as ipAddress
+             , ip_agent_device   as ipAgentDevice
              , ip_agent_os       as ipAgentOs
              , ip_agent_browser  as ipAgentBrowser
              , ip_agent          as ipAgent
@@ -49,7 +53,6 @@
              , file_extension    as fileExtension
              , error_occurred    as errorOccurred
              , error_message     as errorMessage
-             , created_at_kst    as createdAtKst
              , created_at_ldt    as createdAtLdt
           FROM test.access_log
          ORDER BY id DESC

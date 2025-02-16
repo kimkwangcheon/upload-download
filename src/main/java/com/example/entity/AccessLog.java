@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 @Setter
 public class AccessLog {
     private String ipAddress;
+    private String ipAgentDevice;
     private String ipAgentOs;
     private String ipAgentBrowser;
     private String ipAgent;
